@@ -139,9 +139,9 @@ metalevcl/
 ```java
 // Crear modelo de evento
 EventModel event = new EventModel(
-    "Concierto Aniversario",
-    "Estadio Nacional",
-    List.of("Los Jaivas")
+    "South American Tour 2026",
+    "Teatro Caupolicán",
+    List.of("Children Of Boom", "Korpiklaani")
 );
 
 // Usar servicio (con repositorio real o mock)

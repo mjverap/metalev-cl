@@ -28,9 +28,9 @@ class EventServiceTest {
 
     //Arrange for shouldThrowInvalidEventExceptionWhenEventDataIsInvalid
     static Stream<Arguments> invalidEventData() {
-        String eventName = "Concierto Aniversario";
+        String eventName = "LATAM Tour 2027";
         String venue = "Estadio Nacional";
-        List<String> bands = List.of("Los Jaivas");
+        List<String> bands = List.of("Metallica");
         return Stream.of(
                 Arguments.of("", venue, bands),
                 Arguments.of(eventName, "", bands),
@@ -54,8 +54,8 @@ class EventServiceTest {
     @Test
     void shouldSaveEventOnceIfEventIsValid() {
         //Arrange
-        EventModel event = new EventModel("Lollapalooza 2030", "Centro de eventos Chimkowe"
-                , List.of("Los Charros de Lumaco", "La Noche", "Carlitos Run"));
+        EventModel event = new EventModel("The Metal Fest 2027", "Movistar Arena"
+                , List.of("Ratzinger", "Manhattan Sur", "Chances"));
 
         //Act
         eventService.createEvent(event);
