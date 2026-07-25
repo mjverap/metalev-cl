@@ -32,9 +32,7 @@ class EventModelTest {
         int minPrice = 30000;
         int maxPrice = 50000;
 
-        assertDoesNotThrow(() -> {
-            event.setPriceRange(minPrice, maxPrice);
-        });
+        assertDoesNotThrow(() -> event.setPriceRange(minPrice, maxPrice));
 
         assertEquals(minPrice, event.getMinTicketPrice());
         assertEquals(maxPrice, event.getMaxTicketPrice());
@@ -61,9 +59,7 @@ class EventModelTest {
         LocalDate startDate = LocalDate.now();
         LocalDate endDate = startDate.plusDays(1);
 
-        assertDoesNotThrow(() -> {
-            event.setDateRange(startDate, endDate);
-        });
+        assertDoesNotThrow(() -> event.setDateRange(startDate, endDate));
 
         assertEquals(startDate, event.getStartDate());
         assertEquals(endDate, event.getEndDate());
