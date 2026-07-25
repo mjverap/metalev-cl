@@ -5,6 +5,8 @@ import org.mjvera.exceptions.InvalidPriceRangeException;
 
 import java.time.LocalDate;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class EventModelTest {
@@ -24,10 +26,25 @@ class EventModelTest {
     }
 
     @Test
+    void shouldSetPriceRangeSuccessfullyIfPriceRangeIsValid() {
+        //Arrange
+        EventModel event = new EventModel();
+        int minPrice = 30000;
+        int maxPrice = 50000;
+
+        assertDoesNotThrow(() -> {
+            event.setPriceRange(minPrice, maxPrice);
+        });
+
+        assertEquals(minPrice, event.getMinTicketPrice());
+        assertEquals(maxPrice, event.getMaxTicketPrice());
+    }
+
+    @Test
     void shouldThrowInvalidDateRangeIfStartDateIsAfterEndDate() {
         //Arrange
         EventModel event = new EventModel();
-        LocalDate endDate =  LocalDate.now();
+        LocalDate endDate = LocalDate.now();
         LocalDate startDate = endDate.plusDays(1);
 
         //Assert
@@ -35,5 +52,20 @@ class EventModelTest {
             //Act
             event.setDateRange(startDate, endDate);
         });
+    }
+
+    @Test
+    void shouldSetDateRangeSuccessfullyIfDateRangeIsValid() {
+        //Arrange
+        EventModel event = new EventModel();
+        LocalDate startDate = LocalDate.now();
+        LocalDate endDate = startDate.plusDays(1);
+
+        assertDoesNotThrow(() -> {
+            event.setDateRange(startDate, endDate);
+        });
+
+        assertEquals(startDate, event.getStartDate());
+        assertEquals(endDate, event.getEndDate());
     }
 }

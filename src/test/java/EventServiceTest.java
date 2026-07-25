@@ -34,7 +34,10 @@ class EventServiceTest {
         return Stream.of(
                 Arguments.of("", venue, bands),
                 Arguments.of(eventName, "", bands),
-                Arguments.of(eventName, venue, List.of())
+                Arguments.of(eventName, venue, List.of()),
+                Arguments.of(null, venue, bands),
+                Arguments.of(eventName, null, bands),
+                Arguments.of(eventName, venue, null)
         );
     }
 
@@ -49,10 +52,10 @@ class EventServiceTest {
     }
 
     @Test
-    void shouldSaveEventOnceIfEventIsValid(){
+    void shouldSaveEventOnceIfEventIsValid() {
         //Arrange
         EventModel event = new EventModel("Lollapalooza 2030", "Centro de eventos Chimkowe"
-                , List.of("Los Charros de Lumaco","La Noche","Carlitos Run"));
+                , List.of("Los Charros de Lumaco", "La Noche", "Carlitos Run"));
 
         //Act
         eventService.createEvent(event);

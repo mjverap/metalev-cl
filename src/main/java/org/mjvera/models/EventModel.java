@@ -50,4 +50,20 @@ public class EventModel {
     public List<String> getBands() {
         return bands;
     }
+
+    public int getMinTicketPrice() {
+        return this.minTicketPrice;
+    }
+
+    public int getMaxTicketPrice() {
+        return this.maxTicketPrice;
+    }
+
+    public LocalDate getStartDate() {
+        return this.startDate;
+    }
+
+    public LocalDate getEndDate() {
+        return this.endDate;
+    }
 }
