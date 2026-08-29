@@ -1,18 +1,26 @@
 # 🤘🏼 MetalEv-CL
 
-**Gestor de Eventos de Metal en Chile** - Proyecto de referencia para desarrollo dirigido por pruebas (TDD)
+**Gestor de recitales de metal en Chile** - Proyecto Java orientado a arquitectura limpia, DDD táctico y validación de negocio en el dominio.
 
 ## Descripción
 
-MetalEv-CL es un proyecto Java enfocado en **Test-Driven Development (TDD)** que demuestra las mejores prácticas para el desarrollo de aplicaciones mantenibles y confiables. El proyecto gestiona eventos de metal realizados en Chile con validaciones robustas y una cobertura de código del 100%.
+MetalEv-CL es un proyecto Java cuyo objetivo es demostrar una arquitectura limpia con separación explícita entre:
+- `domain`
+- `application`
+- `infrastructure`
 
-Este es un proyecto educativo creado como parte del Curso **Fundamentos de JAVA- Globant Talento Ready** que sirve como referencia para implementar TDD en Java usando JUnit 5 y Mockito.
+Además, incorpora principios de DDD táctico:
+- entidades con identidad única
+- value objects auto-validantes
+- agregados con comportamiento del negocio
+- repositorios puros en el dominio
+- casos de uso con inyección por constructor
 
 ## Requisitos Previos
 
 - **Java 21** o superior
 - **Maven 3.9** o superior
-- **Git** (opcional, para clonar el repositorio)
+- **Git** (opcional)
 
 ### Verificar instalación
 
@@ -21,26 +29,101 @@ java -version
 mvn -version
 ```
 
-## Instalación y Configuración
+## Estructura del Proyecto
 
-### 1. Clonar o descargar el proyecto
-
-```bash
-git clone <url-del-repositorio>
-cd metalevcl
+```text
+metalevcl/
+├── src/
+│   ├── main/
+│   │   └── java/
+│   │       └── org/mjvera/
+│   │           ├── application/
+│   │           │   └── usecase/
+│   │           │       └── CreateRecitalUseCase.java
+│   │           ├── bootstrap/
+│   │           │   └── RecitalBootstrap.java
+│   │           ├── domain/
+│   │           │   ├── entities/
+│   │           │   │   ├── Recital.java
+│   │           │   │   └── Venue.java
+│   │           │   ├── exception/
+│   │           │   │   ├── InvalidDateRangeException.java
+│   │           │   │   ├── InvalidPriceRangeException.java
+│   │           │   │   └── InvalidRecitalInfoException.java
+│   │           │   ├── repository/
+│   │           │   │   └── RecitalRepository.java
+│   │           │   └── valueobject/
+│   │           │       ├── Address.java
+│   │           │       ├── BandList.java
+│   │           │       ├── DateRange.java
+│   │           │       ├── PriceRange.java
+│   │           │       ├── RecitalName.java
+│   │           │       └── VenueName.java
+│   │           └── infrastructure/
+│   │               └── repository/
+│   │                   └── InMemoryRecitalRepository.java
+│   └── test/
+│       └── java/
+│           ├── CreateRecitalUseCaseTest.java
+│           └── RecitalEntityTest.java
+├── pom.xml
+├── README.md
+└── target/
 ```
 
-### 2. Instalar dependencias
+## Regla de Dependencias
 
-```bash
-mvn clean install
+La dependencia sigue esta dirección:
+
+- `infrastructure -> application/domain`
+- `application -> domain`
+- `domain -> ninguna capa externa`
+
+Esto significa que:
+- el dominio no conoce ni depende de infraestructura
+- el caso de uso depende del repositorio del dominio
+- la implementación del repositorio vive fuera del núcleo
+
+## Ejemplo de Uso
+
+```java
+import org.mjvera.application.usecase.CreateRecitalUseCase;
+import org.mjvera.domain.entities.Recital;
+import org.mjvera.domain.entities.Venue;
+import org.mjvera.domain.valueobject.Address;
+import org.mjvera.infrastructure.repository.InMemoryRecitalRepository;
+
+import java.util.List;
+
+public class Demo {
+   public static void main(String[] args) {
+       var repository = new InMemoryRecitalRepository();
+       var useCase = new CreateRecitalUseCase(repository);
+
+       Venue venue = new Venue("1", "Estadio Nacional",
+               new Address("Av. Grecia 2001", "Ñuñoa", "RM"));
+
+       Recital recital = new Recital("Festival del Metal", venue,
+               List.of("Ratzinger", "Chances"));
+
+       useCase.execute(recital);
+   }
+}
 ```
 
-Este comando:
-- Limpia compilaciones previas
-- Descarga todas las dependencias
-- Ejecuta los tests
-- Genera reportes de cobertura
+## Reglas de Dominio Implementadas
+
+- `Recital` es una entidad con identidad única (`id`)
+- `Venue` es una entidad con identidad única (`id`)
+- `DateRange` y `PriceRange` son `record` value objects con validación defensiva
+- `RecitalName`, `BandList` y `VenueName` validan los datos del dominio
+- los cambios de estado se expresan como métodos con intención de negocio, por ejemplo:
+  - `renameTo(...)`
+  - `moveTo(...)`
+  - `addBand(...)`
+  - `removeBand(...)`
+  - `reprogramTo(...)`
+  - `updateTicketPriceRange(...)`
 
 ## Ejecución de Pruebas
 
@@ -53,140 +136,18 @@ mvn test
 ### Ejecutar una clase de test específica
 
 ```bash
-mvn test -Dtest=EventServiceTest
+mvn test -Dtest=RecitalEntityTest
 ```
 
 ### Ejecutar un test específico
 
 ```bash
-mvn test -Dtest=EventServiceTest#shouldThrowInvalidEventExceptionWhenEventDataIsInvalid
+mvn test -Dtest=CreateRecitalUseCaseTest
 ```
 
-### Compilar sin ejecutar tests
+## Cobertura
 
-```bash
-mvn clean compile
-```
-
-## Cobertura de Código
-
-El proyecto utiliza **JaCoCo** para garantizar una cobertura de código del **100%** en líneas y ramas.
-
-### Generar reporte de cobertura
-
-```bash
-mvn clean test
-```
-
-El reporte se genera en: `target/site/jacoco/index.html`
-
-
-## Estructura del Proyecto
-
-```
-metalevcl/
-├── src/
-│   ├── main/
-│   │   └── java/
-│   │       └── org/mjvera/
-│   │           ├── EventService.java           # Servicio principal de eventos
-│   │           ├── EventRepository.java        # Interfaz para persistencia
-│   │           ├── models/
-│   │           │   └── EventModel.java         # Modelo de datos de eventos
-│   │           └── exceptions/
-│   │               ├── InvalidEventInfoException.java
-│   │               ├── InvalidDateRangeException.java
-│   │               └── InvalidPriceRangeException.java
-│   └── test/
-│       └── java/
-│           ├── EventServiceTest.java           # Tests del servicio
-│           └── EventModelTest.java             # Tests del modelo
-├── pom.xml                                     # Configuración de Maven
-└── README.md                                   # Este archivo
-```
-
-## Conceptos TDD Implementados
-
-### 1. **Test-First Approach**
-   - Los tests se escriben antes de la implementación
-   - La implementación se desarrolla para pasar los tests
-
-### 2. **Inyección de Dependencias**
-   - `EventService` recibe `EventRepository` como dependencia
-   - Facilita testing con mocks
-
-### 3. **Mocking**
-   ```java
-   @Mock
-   private EventRepository eventRepository;
-   
-   @InjectMocks
-   private EventService eventService;
-   ```
-
-### 4. **Tests Parametrizados**
-   - Validación de múltiples casos con una sola prueba
-   - Uso de `@ParameterizedTest` y `@MethodSource`
-
-### 5. **Cobertura del 100%**
-   - Líneas y ramas cubiertas
-   - Garantiza calidad y confiabilidad del código
-
-## Ejemplo de Uso
-
-### Crear un evento
-
-```java
-// Crear modelo de evento
-EventModel event = new EventModel(
-    "South American Tour 2026",
-    "Teatro Caupolicán",
-    List.of("Children Of Boom", "Korpiklaani")
-);
-
-// Usar servicio (con repositorio real o mock)
-EventService service = new EventService(repository);
-service.createEvent(event);
-```
-
-### Manejo de excepciones
-
-El proyecto valida:
-- Nombre del evento no vacío
-- Lugar del evento no vacío
-- Lista de bandas no vacía
-- Rango de fechas válido
-- Rango de precios válido
-
-```java
-// Esto lanzará InvalidEventInfoException
-EventModel invalidEvent = new EventModel("", "Venue", List.of("Band"));
-service.createEvent(invalidEvent); // Excepción
-```
-
-## TODO - Mejoras Futuras
-
-Las siguientes características están planeadas para futuras versiones:
-
-### Refactorización de Entidades
-- [ ] **Recinto como entidad propia** - Crear clase `VenueModel` independiente
-  - Separar la lógica del recinto de `EventModel`
-  - Permitir reutilizar recintos entre eventos
-  - Agregar validaciones específicas de recinto (capacidad, ubicación, etc.)
-
-- [ ] **Agregar Productora** - Crear clase `PromoterModel`
-  - Incorporar información de la productora del evento
-  - Relacionar productora con uno o múltiples eventos
-
-### Validaciones y Requisitos
-- [ ] **Cambiar requisitos mínimos de eventos**
-  - Revisar qué campos son realmente obligatorios
-  - Flexibilizar la lista de bandas (opcional vs obligatorio)
-
-- [ ] **Hacer obligatorias fechas de inicio y final**
-  - Agregar campos `startDate` y `endDate` obligatorios a `EventModel`
-  - Tests parametrizados para casos de fechas inválidas
-  - Garantizar cobertura del 100% en nuevas validaciones
+El proyecto usa JaCoCo para reportar cobertura y validar calidad del código.
 
 ## Autor
 
