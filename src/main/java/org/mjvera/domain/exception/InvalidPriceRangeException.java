@@ -1,4 +1,4 @@
-package org.mjvera.exceptions;
+package org.mjvera.domain.exception;
 
 public class InvalidPriceRangeException extends RuntimeException {
     public InvalidPriceRangeException(String message) {

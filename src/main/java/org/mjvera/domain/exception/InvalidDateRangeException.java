@@ -1,4 +1,4 @@
-package org.mjvera.exceptions;
+package org.mjvera.domain.exception;
 
 public class InvalidDateRangeException extends RuntimeException {
     public InvalidDateRangeException(String message) {
